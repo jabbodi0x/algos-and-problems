@@ -50,8 +50,6 @@ void copyOddNumbersFromArrayToAnotherArray(int* originalArray, int* copyArray, i
 	{
 		if (originalArray[i] % 2 != 0)
 			addNumberToArray(copyArray, copyArraySize, originalArray[i]);
-		else
-			continue;
 	}
 }
 
