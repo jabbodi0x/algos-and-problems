@@ -37,7 +37,7 @@ void fillArrayWithRandomNumbers(int* array, int arraySize)
 	}
 }
 
-float getAverageOfArray(int* array, int arraySize)
+float getSumOfArray(int* array, int arraySize)
 {
 	int sum = 0;
 
@@ -45,8 +45,13 @@ float getAverageOfArray(int* array, int arraySize)
 	{
 		sum += array[i];
 	}
+	
+	return sum;
+}
 
-	return (float)(sum/arraySize);
+float getAverageOfArray(int* array, int arraySize)
+{
+	return getSumOfArray(array, arraySize) / arraySize;
 }
 
 int main()

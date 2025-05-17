@@ -37,11 +37,11 @@ void fillArrayWithRandomNumbers(int* array, int arraySize)
 	}
 }
 
-void copyArray(int* originalArray, int* copyarray, int arraySize)
+void sumOf2Arrays(int* array1, int* array2, int* mergedArray, int arraySize)
 {
 	for (int i = 0; i < arraySize; i++)
 	{
-		copyarray[i] = originalArray[i];
+		mergedArray[i] = array1[i] + array2[i];
 	}
 }
 
@@ -49,20 +49,22 @@ int main()
 {
 	srand((unsigned)time(NULL));
 
-	int arraySize = readPositiveNumber("Enter array size: ");
-	int* array = new int[arraySize];
+	int arraySize = readPositiveNumber("Enter the size of the array: ");
+	int* array1 = new int[arraySize];
 	int* array2 = new int[arraySize];
-	fillArrayWithRandomNumbers(array, arraySize);
+	int* sumArray = new int[arraySize];
 
-	cout << "\nOriginal Array Elements:\n";
-	printArrayElements(array, arraySize);
+	fillArrayWithRandomNumbers(array1, arraySize);
+	fillArrayWithRandomNumbers(array2, arraySize);
+	sumOf2Arrays(array1, array2, sumArray, arraySize);
 
-	
-	copyArray(array, array2, arraySize);
+	cout << "\nArray 1: \n";
+	printArrayElements(array1, arraySize);
+	cout << "\n\nArray 2: \n";
+	printArrayElements(array2, arraySize);
+	cout << "\n\nMerged Array: \n";
+	printArrayElements(sumArray, arraySize);
 
-	cout << "\nCopy Array Elements:\n";
-	printArrayElements(array, arraySize);
-	
 
 	return 0;
 

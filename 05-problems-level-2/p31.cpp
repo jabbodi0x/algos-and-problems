@@ -33,15 +33,20 @@ void fillArrayWithRandomNumbers(int* array, int arraySize)
 {
 	for (int i = 0; i < arraySize; i++)
 	{
-		array[i] = getRandomNumber(1, 100);
+		array[i] = getRandomNumber(1,20);
 	}
 }
 
-void copyArray(int* originalArray, int* copyarray, int arraySize)
+void shuffleArray(int * array, int arraySize)
 {
 	for (int i = 0; i < arraySize; i++)
 	{
-		copyarray[i] = originalArray[i];
+		int index1 = getRandomNumber(0, arraySize - 1);
+		int index2 = getRandomNumber(0, arraySize - 1);
+
+		array[index1] += array[index2];
+		array[index2] = array[index1] - array[index2];
+		array[index1] -= array[index2];
 	}
 }
 
@@ -49,21 +54,16 @@ int main()
 {
 	srand((unsigned)time(NULL));
 
-	int arraySize = readPositiveNumber("Enter array size: ");
-	int* array = new int[arraySize];
-	int* array2 = new int[arraySize];
-	fillArrayWithRandomNumbers(array, arraySize);
+	int arraySize = readPositiveNumber("Enter the size of the array: ");
+	int* array1 = new int[arraySize];
 
-	cout << "\nOriginal Array Elements:\n";
-	printArrayElements(array, arraySize);
+	fillArrayWithRandomNumbers(array1, arraySize);
 
-	
-	copyArray(array, array2, arraySize);
+	printArrayElements(array1, arraySize);
+	cout << "\n\n";
 
-	cout << "\nCopy Array Elements:\n";
-	printArrayElements(array, arraySize);
-	
-
+	shuffleArray(array1, arraySize);
+	printArrayElements(array1, arraySize);
 	return 0;
 
 }

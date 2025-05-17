@@ -37,11 +37,29 @@ void fillArrayWithRandomNumbers(int* array, int arraySize)
 	}
 }
 
-void copyArray(int* originalArray, int* copyarray, int arraySize)
+bool isPrime(int number)
+{
+	if (number == 1)
+		return false;
+	
+	for (int i = 2; i <= sqrt(number); i++)
+	{
+		if (number % i == 0)
+			return false;
+	}
+
+	return true;
+}
+
+void copyArrayOnlyPrimes(int array1[100], int array2[100], int arraySize, int& copyArraySize)
 {
 	for (int i = 0; i < arraySize; i++)
 	{
-		copyarray[i] = originalArray[i];
+		if (isPrime(array1[i]))
+		{
+			array2[copyArraySize] = array1[i];
+			copyArraySize++;
+		}
 	}
 }
 
@@ -49,21 +67,16 @@ int main()
 {
 	srand((unsigned)time(NULL));
 
-	int arraySize = readPositiveNumber("Enter array size: ");
-	int* array = new int[arraySize];
-	int* array2 = new int[arraySize];
-	fillArrayWithRandomNumbers(array, arraySize);
+	int array[100], copyArray[100], copyArraySize = 0;
 
-	cout << "\nOriginal Array Elements:\n";
-	printArrayElements(array, arraySize);
+	fillArrayWithRandomNumbers(array, 100);
 
+	cout << "Array Elements:\n";
+	printArrayElements(array, 100);
+
+	cout << "\n\nCopy Array Elements(Only Primes:\n";
+	copyArrayOnlyPrimes(array, copyArray, 100, copyArraySize);
+	printArrayElements(copyArray, copyArraySize);
 	
-	copyArray(array, array2, arraySize);
-
-	cout << "\nCopy Array Elements:\n";
-	printArrayElements(array, arraySize);
-	
-
 	return 0;
-
 }
