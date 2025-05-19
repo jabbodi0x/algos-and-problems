@@ -135,30 +135,41 @@ float readUserAnswer()
 
 }
 
-void printOperationSymbol(const enOperationType& operationType)
+string getOperationString(const enOperationType& operationType)
 {
-	char op = ' ';
-
 	switch (operationType)
 	{
 	case enOperationType::addition:
-		op='+';
-		break;
+		return "Addition";
 	case enOperationType::subtraction:
-		op = '-';
-		break;
+		return "Subtraction";
 	case enOperationType::multiplication:
-		op = 'x';
-		break;
+		return "Multiplication";
 	case enOperationType::division:
-		op = '÷';
-		break;
+		return "Division";
+	case enOperationType::mixOperation:
+		return "Mix";
+	default:
+		return "Unknown";
 	}
-	cout << op;
+}
 
-	if (operationType == enOperationType::mixOperation)
+char getOperationSymbol(const enOperationType& operationType)
+{
+	switch (operationType)
 	{
-		cout << "Mix";
+	case enOperationType::addition:
+		return '+';
+	case enOperationType::subtraction:
+		return '-';
+	case enOperationType::multiplication:
+		return '*';
+	case enOperationType::division:
+		return '/';
+	case enOperationType::mixOperation:
+		return '?';
+	default:
+		return '?';
 	}
 }
 
@@ -210,8 +221,7 @@ void printQuestion(const stQuestion& q, int current, int total)
 {
 	cout << "\n\n===========================\n";
 	cout << "Question [" << current << "/" << total << "]\n";
-	cout << q.num1 << endl << q.num2 << " ";
-	printOperationSymbol(q.operation);
+	cout << q.num1 << endl << q.num2 << " " << getOperationSymbol(q.operation);
 	cout <<endl << "-------\n";
 }
 
@@ -242,11 +252,13 @@ void changeScreenColorBasedOnRightAnswers(int right, int wrong)
 void printFinalResults(int right, int wrong, enQuestionLevel level, enOperationType op)
 {
 	cout << "\n\n\n=========== Final Results ===========";
+	cout << "\nTotal Questions: " << right + wrong << "\n";
 	cout << "\nCorrect Answers: " << right << "\n";
 	cout << "\nWrong Answers  : " << wrong << "\n";
+	cout << "\n=====================================";
+
 	cout << "\nDifficulty     : " << getDifficultyString(level);
-	cout << "\nOperation Type : ";
-	printOperationSymbol(op);
+	cout << "\nOperation Type : " << getOperationString(op);
 	cout << "\n=====================================\n\n\n";
 }
 
