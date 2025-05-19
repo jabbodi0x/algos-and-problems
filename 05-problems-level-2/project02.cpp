@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <windows.h>
 
 using namespace std;
 
@@ -30,7 +30,7 @@ struct stQuestion {
 	bool isCorrect;
 };
 
-int getRandomNumber(int fromNumber, int toNumber)
+short getRandomNumber(int fromNumber, int toNumber)
 {
 	return (rand() % (toNumber - fromNumber + 1) + fromNumber);
 }
@@ -67,7 +67,7 @@ enOperationType readOperationType()
 
 	do
 	{
-		cout << "Enter Operation Type: [1] Addition   [2] Subtraction   [3] Multiplication   [4] Division   [5] Mix:  ";
+		cout << "Enter Operation Type: [1] Add   [2] Subttract   [3] Multiply   [4] Divide   [5] Mix:  ";
 		cin >> operationType;
 	} while (operationType < 1 || operationType > 5);
 
@@ -87,7 +87,7 @@ bool readPlayAgain()
 	return (answer == 'y');
 }
 
-int generateNumberToOperate(const enQuestionLevel questionLevel)
+short generateNumberToOperate(const enQuestionLevel questionLevel)
 {
 	switch (questionLevel)
 	{
@@ -104,6 +104,8 @@ int generateNumberToOperate(const enQuestionLevel questionLevel)
 		return getRandomNumber(1, 99);
 		break;
 	}
+	// Default return value in case no case matches
+	return 0.0f;
 }
 
 float getAnswer(int number1, int number2, const enOperationType& operationType)
@@ -122,8 +124,6 @@ float getAnswer(int number1, int number2, const enOperationType& operationType)
 	case enOperationType::division:
 		return (float)number1 / number2;
 		break;
-	case enOperationType::mixOperation:
-		return getAnswer(number1, number2, (enOperationType)getRandomNumber(1, 4));
 	}
 }
 
@@ -149,8 +149,6 @@ string getOperationString(const enOperationType& operationType)
 		return "Division";
 	case enOperationType::mixOperation:
 		return "Mix";
-	default:
-		return "Unknown";
 	}
 }
 
@@ -198,6 +196,12 @@ enOperationType getRandomOperationType()
 	return (enOperationType)getRandomNumber(1, 4);
 }
 
+void turnToBlack()
+{
+	Sleep(1500);
+	system("color 0F");
+}
+
 void checkAnswer(stQuestion& q)
 {
 	cin >> q.userAnswer;
@@ -206,12 +210,14 @@ void checkAnswer(stQuestion& q)
 	{
 		cout << "Right Answer!\n";
 		system("color 2F");
+		turnToBlack();
 		q.isCorrect = true;
 	}
 	else
 	{
 		cout << "Wrong Answer! Correct is: " << q.correctAnswer << "\n";
 		system("color 4F");
+		turnToBlack();
 		q.isCorrect = false;
 	}
 	cout << "===========================\n";
@@ -239,7 +245,7 @@ stQuestion generateQuestion(enQuestionLevel selectedLevel, enOperationType selec
 	return q;
 }
 
-void changeScreenColorBasedOnRightAnswers(int right, int wrong)
+void changeScreenColorBasedOnRightAnswers(short right, short  wrong)
 {
 	if (right > wrong)
 		system("color 2F");
@@ -249,8 +255,9 @@ void changeScreenColorBasedOnRightAnswers(int right, int wrong)
 		system("color 6F");
 }
 
-void printFinalResults(int right, int wrong, enQuestionLevel level, enOperationType op)
+void printFinalResults(short  right, short  wrong, enQuestionLevel level, enOperationType op)
 {
+	changeScreenColorBasedOnRightAnswers(right, wrong);
 	cout << "\n\n\n=========== Final Results ===========";
 	cout << "\nTotal Questions: " << right + wrong;
 	cout << "\nCorrect Answers: " << right;
