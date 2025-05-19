@@ -82,7 +82,7 @@ bool readPlayAgain()
 		cout << "Do you want to play again? Y/N: ";
 		cin >> answer;
 		answer = tolower(answer);
-    } while (answer != 'y' && answer != 'n');
+	} while (answer != 'y' && answer != 'n');
 
 	return (answer == 'y');
 }
@@ -123,7 +123,7 @@ float getAnswer(int number1, int number2, const enOperationType& operationType)
 		return (float)number1 / number2;
 		break;
 	case enOperationType::mixOperation:
-		return getAnswer(number1,number2,(enOperationType)getRandomNumber(1, 4));
+		return getAnswer(number1, number2, (enOperationType)getRandomNumber(1, 4));
 	}
 }
 
@@ -222,7 +222,7 @@ void printQuestion(const stQuestion& q, int current, int total)
 	cout << "\n\n===========================\n";
 	cout << "Question [" << current << "/" << total << "]\n";
 	cout << q.num1 << endl << q.num2 << " " << getOperationSymbol(q.operation);
-	cout <<endl << "-------\n";
+	cout << endl << "-------\n";
 }
 
 stQuestion generateQuestion(enQuestionLevel selectedLevel, enOperationType selectedOp)
@@ -252,9 +252,9 @@ void changeScreenColorBasedOnRightAnswers(int right, int wrong)
 void printFinalResults(int right, int wrong, enQuestionLevel level, enOperationType op)
 {
 	cout << "\n\n\n=========== Final Results ===========";
-	cout << "\nTotal Questions: " << right + wrong << "\n";
-	cout << "\nCorrect Answers: " << right << "\n";
-	cout << "\nWrong Answers  : " << wrong << "\n";
+	cout << "\nTotal Questions: " << right + wrong;
+	cout << "\nCorrect Answers: " << right;
+	cout << "\nWrong Answers  : " << wrong;
 	cout << "\n=====================================";
 
 	cout << "\nDifficulty     : " << getDifficultyString(level);
@@ -288,7 +288,7 @@ void playQuizGame()
 				wrongCount++;
 		}
 
-		printFinalResults(correctCount, wrongCount,level,op);
+		printFinalResults(correctCount, wrongCount, level, op);
 
 	} while (readPlayAgain());
 }
