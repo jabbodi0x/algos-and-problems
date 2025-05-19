@@ -135,22 +135,30 @@ float readUserAnswer()
 
 }
 
-char getOperationSymbol(const enOperationType& operationType)
+void printOperationSymbol(const enOperationType& operationType)
 {
+	char op = ' ';
+
 	switch (operationType)
 	{
 	case enOperationType::addition:
-		return '+';
+		op='+';
 		break;
 	case enOperationType::subtraction:
-		return '-';
+		op = '-';
 		break;
 	case enOperationType::multiplication:
-		return 'x';
+		op = 'x';
 		break;
 	case enOperationType::division:
-		return '÷';
+		op = '÷';
 		break;
+	}
+	cout << op;
+
+	if (operationType == enOperationType::mixOperation)
+	{
+		cout << "Mix";
 	}
 }
 
@@ -202,9 +210,9 @@ void printQuestion(const stQuestion& q, int current, int total)
 {
 	cout << "\n\n===========================\n";
 	cout << "Question [" << current << "/" << total << "]\n";
-	cout << q.num1 << endl
-		<< q.num2 << " " << getOperationSymbol(q.operation) << endl
-		<< "-------\n";
+	cout << q.num1 << endl << q.num2 << " ";
+	printOperationSymbol(q.operation);
+	cout <<endl << "-------\n";
 }
 
 stQuestion generateQuestion(enQuestionLevel selectedLevel, enOperationType selectedOp)
@@ -231,12 +239,15 @@ void changeScreenColorBasedOnRightAnswers(int right, int wrong)
 		system("color 6F");
 }
 
-void printFinalResults(int right, int wrong)
+void printFinalResults(int right, int wrong, enQuestionLevel level, enOperationType op)
 {
-	cout << "\n\n\n=========== Final Results ===========\n";
-	cout << "Correct Answers: " << right << "\n";
-	cout << "Wrong Answers  : " << wrong << "\n";
-	cout << "=====================================\n\n\n";
+	cout << "\n\n\n=========== Final Results ===========";
+	cout << "\nCorrect Answers: " << right << "\n";
+	cout << "\nWrong Answers  : " << wrong << "\n";
+	cout << "\nDifficulty     : " << getDifficultyString(level);
+	cout << "\nOperation Type : ";
+	printOperationSymbol(op);
+	cout << "\n=====================================\n\n\n";
 }
 
 void playQuizGame()
@@ -265,7 +276,7 @@ void playQuizGame()
 				wrongCount++;
 		}
 
-		printFinalResults(correctCount, wrongCount);
+		printFinalResults(correctCount, wrongCount,level,op);
 
 	} while (readPlayAgain());
 }
