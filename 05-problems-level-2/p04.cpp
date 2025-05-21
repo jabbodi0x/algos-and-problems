@@ -48,6 +48,6 @@ void printPerfectNumbersFrom1ToN(int n)
 
 int main()
 {
-	printPerfectNumbersFrom1ToN(200000);
+	printPerfectNumbersFrom1ToN(10000);
 	return 0;
 }
