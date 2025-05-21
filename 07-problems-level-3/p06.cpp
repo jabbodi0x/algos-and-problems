@@ -26,7 +26,7 @@ void printMatrix(int matrix[3][3], short matrixRows, short matrixColumns, string
 	cout << prompt;
 	for (short i = 0; i < matrixRows; i++)
 	{
-		for (int j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns; j++)
 		{
 			cout << left << setw(3) << matrix[i][j] << "  ";
 		}
@@ -38,7 +38,7 @@ void fillMatrixWithRandomNumbers(int matrix[3][3],short matrixRows, short matrix
 {
 	for (short i = 0; i < matrixRows; i++)
 	{
-		for (int j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns; j++)
 		{
 			matrix[i][j] = getRandomNumber(1, 20);
 		}
@@ -50,7 +50,7 @@ void fillMatrixWithOrderedNumbers(int matrix[3][3], short matrixRows, short matr
 	short number = 0;
 	for (int i = 0; i < matrixRows; i++)
 	{
-		for (int j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns; j++)
 		{
 			matrix[i][j] = ++number;
 		}

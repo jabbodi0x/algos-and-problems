@@ -37,61 +37,46 @@ void printMatrix(int matrix[3][3], short matrixRows, short matrixColumns, string
 	cout << "______________________" << endl;
 }
 
-void fillMatrixWithRandomNumbers(int matrix[3][3],short matrixRows, short matrixColumns)
+void fillMatrixWithRandomNumbers(int matrix[3][3], short matrixRows, short matrixColumns, short from = 1, short to = 100)
 {
 	for (short i = 0; i < matrixRows; i++)
 	{
 		for (short j = 0; j < matrixColumns; j++)
 		{
-			matrix[i][j] = getRandomNumber(1, 5);
+			matrix[i][j] = getRandomNumber(from, to);
 		}
 	}
 }
 
-int getSumOfMatrix(int matrix[3][3], short matrixRows, short matrixColumns)
-{
-	int sum = 0;
-
-	for (short i = 0; i < matrixRows; i++)
-	{
-		for (short j = 0; j < matrixColumns; j++)
-		{
-			sum += matrix[i][j];
-		}
-	}
-
-	return sum;
-}
-
-bool isMatricesTypical(int matrix1[3][3], int matrix2[3][3] ,short matrixRows, short matrixColumns)
+bool isMatrixPalindrome(int matrix[3][3], short matrixRows, short matrixColumns)
 {
 	for (short i = 0; i < matrixRows; i++)
 	{
-		for (short j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns/2; j++)
 		{
-			if (matrix1[i][j] != matrix2[i][j])
+			if (matrix[i][j] != matrix[i][matrixColumns - j - 1])
 				return false;
 		}
 	}
-
 	return true;
 }
+
+
+
 
 int main()
 {
 	srand((unsigned)time(NULL));
-	
-	
-	int matrix1[3][3] = { {1,2,3},{4,5,6},{7,8,9} };
-	int matrix2[3][3] = { {1,2,3},{4,5,6},{7,8,9} };
 
+
+	int matrix1[3][3] = { {1,2,1},{3,5,4},{6,2,6} };
 	printMatrix(matrix1, 3, 3, "Matrix 1 Elements:\n");
-	printMatrix(matrix2, 3, 3, "Matrix 2 Elements:\n");
 
-	if (isMatricesTypical(matrix1, matrix2, 3, 3))
-		cout << "\nYES, Matrices are typical\n\n";
+	if (isMatrixPalindrome(matrix1, 3, 3))
+		cout << "\nMatrix is Palindrome.";
 	else
-		cout << "\nNO, Matrices are NOT typical\n\n";
+		cout << "\nMatrix is NOT Palindrome.";
 
+	cout << endl << endl;
 
 }

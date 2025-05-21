@@ -27,7 +27,7 @@ void printMatrix(int matrix[3][3], short matrixRows, short matrixColumns, string
 	cout << prompt;
 	for (short i = 0; i < matrixRows; i++)
 	{
-		for (int j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns; j++)
 		{
 			printf("%0*d\t", 2, matrix[i][j]);
 			//cout << matrix[i][j] << " ";
@@ -41,7 +41,7 @@ void fillMatrixWithRandomNumbers(int matrix[3][3],short matrixRows, short matrix
 {
 	for (short i = 0; i < matrixRows; i++)
 	{
-		for (int j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns; j++)
 		{
 			matrix[i][j] = getRandomNumber(1, 5);
 		}
@@ -54,7 +54,7 @@ int getSumOfMatrix(int matrix[3][3], short matrixRows, short matrixColumns)
 
 	for (short i = 0; i < matrixRows; i++)
 	{
-		for (int j = 0; j < matrixColumns; j++)
+		for (short j = 0; j < matrixColumns; j++)
 		{
 			sum += matrix[i][j];
 		}
