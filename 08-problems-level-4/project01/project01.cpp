@@ -4,8 +4,6 @@
 #include <iomanip>
 #include <fstream>
 #include <cstdlib>
-#include <sstream>     // For safer string-to-number conversions
-#include <stdexcept>   // For exception handling
 
 using namespace std;
 
@@ -27,11 +25,10 @@ struct stUser
 {
     string userName;
     string passWord;      // TODO: Consider storing a hashed password instead of plain text
-    int    permissions;   // bit‐flags for allowed operations
-    bool   markedForDeletion = false;
+    int permissions;   // bit‐flags for allowed operations
+    bool markedForDeletion = false;
 };
 
-// Permission bits (each is one power‐of‐two)
 enum enPermissions
 {
     permShowClients = 1 << 0,  // 0000 0001 = 1
@@ -184,38 +181,27 @@ float readPositiveFloat(const string& prompt)
 // Convert a line from the clients file into an stClient struct
 stClient convertClientLineToStructure(const string& clientRecordLine)
 {
-    stClient       client;
+    stClient client;
     vector<string> fields = splitString(clientRecordLine, SEPARATOR);
-    if (fields.size() == 5)
-    {
-        client.accountNumber = fields[0];
-        client.pinCode = fields[1];
-        client.name = fields[2];
-        client.phone = fields[3];
-        try
-        {
-            client.balance = stof(fields[4]);
-        }
-        catch (...)
-        {
-            client.balance = 0.0f;
-            // Suggestion: log or handle malformed balance field
-        }
-    }
+    
+    client.accountNumber = fields[0];
+    client.pinCode = fields[1];
+    client.name = fields[2];
+    client.phone = fields[3];
+    client.balance = stof(fields[4]);
+
     return client;
 }
 
 // Convert an stClient struct into a single string line for file storage
 string convertClientRecordToData(const stClient& client)
 {
-    // Use to_string with fixed‐precision to ensure consistent formatting in file
-    ostringstream oss;
-    oss << fixed << setprecision(2) << client.balance;
+
     return client.accountNumber + SEPARATOR
         + client.pinCode + SEPARATOR
         + client.name + SEPARATOR
         + client.phone + SEPARATOR
-        + oss.str();
+        + to_string(client.balance);
 }
 
 // Load all clients from the file into a vector
@@ -262,21 +248,13 @@ void saveClientsToFile(const vector<stClient>& vClients)
 // Convert a line from the users file into an stUser struct
 stUser convertUserLineToStructure(const string& userRecordLine)
 {
-    stUser         user;
+    stUser user;
     vector<string> fields = splitString(userRecordLine);
     if (fields.size() >= 3)
     {
         user.userName = fields[0];
         user.passWord = fields[1];
-        try
-        {
-            user.permissions = stoi(fields[2]);
-        }
-        catch (...)
-        {
-            user.permissions = 0;
-            // Suggestion: log or handle malformed permissions field
-        }
+        user.permissions = stoi(fields[2]);
     }
     return user;
 }
@@ -399,7 +377,7 @@ short getClientIndexByAccountNumber(const vector<stClient>& vClients, const stri
     for (size_t i = 0; i < vClients.size(); i++)
     {
         if (vClients[i].accountNumber == accountNumber && !vClients[i].markedForDeletion)
-            return static_cast<short>(i);
+            return (short)i;
     }
     return -1;
 }
@@ -729,10 +707,9 @@ short getuUserIndexByUsername(const vector<stUser>& vUsers, const string& userna
 {
     for (size_t i = 0; i < vUsers.size(); ++i)
     {
-        if (stringToLower(vUsers[i].userName) == stringToLower(username)
-            && !vUsers[i].markedForDeletion)
+        if (stringToLower(vUsers[i].userName) == stringToLower(username) && !vUsers[i].markedForDeletion)
         {
-            return static_cast<short>(i);
+            return (short)i;
         }
     }
     return -1;
@@ -932,7 +909,6 @@ void manageUsers(vector<stUser>& vUsers)
             findUser(vUsers);
             break;
         case enMainMenuUsers:
-            // Return to main menu
             break;
         }
         if (option != enMainMenuUsers)
@@ -958,7 +934,7 @@ bool isLoginValid(const vector<stUser>& vUsers, const string& username, const st
         if ((stringToLower(vUsers[i].userName) == stringToLower(username)) &&
             vUsers[i].passWord == password)
         {
-            idx = static_cast<short>(i);
+            idx = (short)i;
             return true;
         }
     }
