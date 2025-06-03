@@ -150,7 +150,6 @@ stClient convertClientLineToStructure(const string& clientRecordLine)
     stClient       client;
     vector<string> fields = splitString(clientRecordLine, SEPARATOR);
 
-    // Expecting: accountNumber #//# pinCode #//# name #//# phone #//# balance
     if (fields.size() == 5)
     {
         client.accountNumber = fields[0];
@@ -164,7 +163,6 @@ stClient convertClientLineToStructure(const string& clientRecordLine)
 
 string convertClientRecordToData(const stClient& client)
 {
-    // accountNumber #//# pinCode #//# name #//# phone #//# balance
     return client.accountNumber + SEPARATOR
         + client.pinCode + SEPARATOR
         + client.name + SEPARATOR
@@ -223,7 +221,6 @@ stUser convertUserLineToStructure(const string& userRecordLine)
 
 string convertUserRecordToData(const stUser& user)
 {
-    // userName #//# passWord #//# permissions
     return user.userName + SEPARATOR
         + user.passWord + SEPARATOR
         + to_string(user.permissions);
@@ -279,32 +276,51 @@ void printClientRow(const stClient& client)
 {
     cout << "| " << setw(15) << left << client.accountNumber
         << "| " << setw(10) << left << client.pinCode
-        << "| " << setw(40) << left << client.name
+        << "| " << setw(25) << left << client.name
         << "| " << setw(12) << left << client.phone
         << "| " << setw(12) << left << client.balance
+        << " |"
         << "\n";
 }
 
 void printAllClientsData(const vector<stClient>& vClients)
 {
+
+    const int tableWidth = 86;
+
     system("cls");
-    cout << "================================================================================================\n";
-    cout << "\n\t\t\t(" << vClients.size() << ") Client(s)\n";
-    cout << "================================================================================================\n";
+
+    cout << string(tableWidth, '=') << "\n";
+
+    {
+        string countLine = "(" + to_string(vClients.size()) + ") Client(s)";
+        int    padLeft = (tableWidth - static_cast<int>(countLine.size())) / 2;
+        if (padLeft < 0) padLeft = 0;
+        cout << string(padLeft, ' ') << countLine << "\n";
+    }
+
+    cout << string(tableWidth, '=') << "\n";
+
     cout << "| " << left << setw(15) << "Account Number"
         << "| " << left << setw(10) << "Pin Code"
-        << "| " << left << setw(40) << "Client Name"
+        << "| " << left << setw(25) << "Client Name"
         << "| " << left << setw(12) << "Phone"
         << "| " << left << setw(12) << "Balance"
+        << " |"
         << "\n";
-    cout << "================================================================================================\n";
+
+    cout << string(tableWidth, '=') << "\n";
 
     for (const stClient& client : vClients)
+    {
         if (!client.markedForDeletion)
             printClientRow(client);
+    }
 
-    cout << "================================================================================================\n";
+    // Bottom border
+    cout << string(tableWidth, '=') << "\n";
 }
+
 
 #pragma endregion
 
@@ -389,7 +405,7 @@ void addNewClient(vector<stClient>& vClients)
             cout << "\nAdding client canceled.\n";
         }
     } while (confirmAction("Do you want to add another new client?"));
-    
+
 }
 
 void deleteClient(vector<stClient>& vClients)
@@ -411,7 +427,7 @@ void deleteClient(vector<stClient>& vClients)
             cout << "\nDeletion canceled.\n";
         }
     } while (confirmAction("Do you want to delete another client?"));
-    
+
 }
 
 void updateClientData(stClient& client)
@@ -443,7 +459,7 @@ void updateClient(vector<stClient>& vClients)
             cout << "\nUpdate canceled.\n";
         }
     } while (confirmAction("Do you want to update another client?"));
-    
+
 }
 
 void findClient(const vector<stClient>& vClients)
@@ -455,7 +471,7 @@ void findClient(const vector<stClient>& vClients)
         cout << "\n\nAccount Found!\n\n";
         printSingleClientRecord(vClients[idx]);
     } while (confirmAction("Do you want to find another client?"));
-    
+
 }
 
 float getPositiveAmount(const string& prompt)
@@ -515,7 +531,7 @@ void depositMenu(vector<stClient>& vClients)
             }
         } while (confirmAction("Do you want to deposit more to this client's account?"));
     } while (confirmAction("Do you want to deposit to another client's account?"));
-    
+
 }
 
 void withdrawMenu(vector<stClient>& vClients)
@@ -539,7 +555,7 @@ void withdrawMenu(vector<stClient>& vClients)
             }
         } while (confirmAction("Do you want to withdraw more from this client's account?"));
     } while (confirmAction("Do you want to withdraw from another client's account?"));
-    
+
 }
 
 void totalBalanceMenu(const vector<stClient>& vClients)
@@ -550,7 +566,7 @@ void totalBalanceMenu(const vector<stClient>& vClients)
         short idx = getValidClientIndex(vClients);
         cout << "\nClient with account number " << vClients[idx].accountNumber << " has a total balance of " << fixed << setprecision(2) << vClients[idx].balance << "\n";
     } while (confirmAction("Would you like to see another client's total balance?"));
-    
+
 }
 
 void transactionMenu()
@@ -616,7 +632,7 @@ void printAllUserssData(const vector<stUser>& vUsers)
     system("cls");
     cout << "\n\t\t\t(" << vUsers.size() << ") User(s)\n";
     cout << "===========================================================\n";
-    cout 
+    cout
         << "| " << left << setw(15) << "Username"
         << "| " << left << setw(25) << "Password"
         << "| " << left << setw(3) << "Permissions"
@@ -638,50 +654,51 @@ void printAllUserssData(const vector<stUser>& vUsers)
 
 short getuUserIndexByUsername(const vector<stUser>& vUsers, const string& username)
 {
-	for (size_t i = 0; i < vUsers.size(); ++i)
-	{
-		if (stringToLower(vUsers[i].userName) == stringToLower(username) && !vUsers[i].markedForDeletion)
-		{
-			return i;
-		}
-	}
-	return -1;
+    for (size_t i = 0; i < vUsers.size(); ++i)
+    {
+        if (stringToLower(vUsers[i].userName) == stringToLower(username) && !vUsers[i].markedForDeletion)
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 short getValidUserIndex(const vector<stUser>& vUsers)
 {
-	string username;
-	short idx;
-	do
-	{
-		username = readString("Enter Username:\n");
-		idx = getuUserIndexByUsername(vUsers, username);
-		if (idx == -1)
-			cout << "User with username '" << username << "' was NOT found. Try again.\n";
-	} while (idx == -1);
-	return idx;
+    string username;
+    short idx;
+    do
+    {
+        username = readString("\nEnter Username:\n");
+        idx = getuUserIndexByUsername(vUsers, username);
+        if (idx == -1)
+            cout << "\nUser with username '" << username << "' was NOT found. Try again.\n";
+    } while (idx == -1);
+    return idx;
 }
 
 stUser readUserData(const vector<stUser>& vUsers)
 {
-	stUser user;
-	string username;
+    stUser user;
+    string username;
 
-	while (true)
-	{
-		username = readString("Enter Username:\n");
-		if (getuUserIndexByUsername(vUsers, username) == -1)
-		{
-			user.userName = username;
-			break;
-		}
-		else
-			cout << "A user with username '" << username << "' already exists or is reserved. Try again.\n";
-	}
+    while (true)
+    {
+        username = readString("\nEnter Username:\n");
+        if (getuUserIndexByUsername(vUsers, username) == -1)
+        {
+            user.userName = username;
+            break;
+        }
+        else
+            cout << "\nA user with username '" << username << "' already exists or is reserved. Try again.\n";
+    }
 
-	user.passWord = readString("Enter Password:\n");
+    user.passWord = readString("\nEnter Password:\n");
 
     cout << "\nPermissions\n";
+    user.permissions = 0;
     user.permissions += (confirmAction("1- Show Clients List") ? 2 : 0);
     user.permissions += (confirmAction("2- Add New Clients") ? 4 : 0);
     user.permissions += (confirmAction("3- Delete Clients") ? 8 : 0);
@@ -690,7 +707,7 @@ stUser readUserData(const vector<stUser>& vUsers)
     user.permissions += (confirmAction("6- Manage Users") ? 64 : 0);
 
 
-	return user;
+    return user;
 }
 void listUsers(const vector<stUser>& vUsers)
 {
@@ -702,21 +719,21 @@ void addUser(vector<stUser>& vUsers)
     do
     {
         printScreenHeader("Add User");
-		stUser user = readUserData(vUsers);
+        stUser user = readUserData(vUsers);
 
-		cout << "\nYou entered:\n";
-		printSingleUserRecord(user);
+        cout << "\nYou entered:\n";
+        printSingleUserRecord(user);
 
-		if (confirmAction("Do you want to add this user?"))
-		{
-			vUsers.push_back(user);
-			cout << "\nUser was added successfully!\n";
-		}
-		else
-		{
-			cout << "\nAdding user canceled.\n";
-		}
-    } while (confirmAction("Do you want to add another new user?"));
+        if (confirmAction("\nDo you want to add this user?"))
+        {
+            vUsers.push_back(user);
+            cout << "\nUser was added successfully!\n";
+        }
+        else
+        {
+            cout << "\nAdding user canceled.\n";
+        }
+    } while (confirmAction("\nDo you want to add another new user?"));
 }
 
 void deleteUser(vector<stUser>& vUsers)
@@ -728,7 +745,7 @@ void deleteUser(vector<stUser>& vUsers)
         short idx = getValidUserIndex(vUsers);
         printSingleUserRecord(vUsers[idx]);
 
-        if (confirmAction("Do you want to remove this user?"))
+        if (confirmAction("\nDo you want to remove this user?"))
         {
             vUsers[idx].markedForDeletion = true;
             cout << "\nUser was deleted successfully!\n";
@@ -737,15 +754,15 @@ void deleteUser(vector<stUser>& vUsers)
         {
             cout << "\nDeletion canceled.\n";
         }
-    } while (confirmAction("Do you want to delete another user?"));
+    } while (confirmAction("\nDo you want to delete another user?"));
 }
 
 void updateUserData(stUser& user)
 {
-    user.passWord = readString("Enter new Password:\n");
+    user.passWord = readString("\nEnter new Password:\n");
 
     cout << "\nPermissions\n";
-    user.permissions = 0; // Reset permissions
+    user.permissions = 0;
     user.permissions += (confirmAction("1- Show Clients List") ? 2 : 0);
     user.permissions += (confirmAction("2- Add New Clients") ? 4 : 0);
     user.permissions += (confirmAction("3- Delete Clients") ? 8 : 0);
@@ -763,7 +780,7 @@ void updateUser(vector<stUser>& vUsers)
         short idx = getValidUserIndex(vUsers);
         printSingleUserRecord(vUsers[idx]);
 
-        if (confirmAction("Do you want to update this user?"))
+        if (confirmAction("\nDo you want to update this user?"))
         {
             updateUserData(vUsers[idx]);
             cout << "\nUser was updated successfully!\n";
@@ -774,7 +791,7 @@ void updateUser(vector<stUser>& vUsers)
         {
             cout << "\nUpdate canceled.\n";
         }
-    } while (confirmAction("Do you want to update another user?"));
+    } while (confirmAction("\nDo you want to update another user?"));
 }
 
 void findUser(const vector<stUser>& vUsers)
@@ -785,7 +802,7 @@ void findUser(const vector<stUser>& vUsers)
         short idx = getValidUserIndex(vUsers);
         cout << "\n\nUser Found!\n\n";
         printSingleUserRecord(vUsers[idx]);
-    } while (confirmAction("Do you want to find another user?"));
+    } while (confirmAction("\nDo you want to find another user?"));
 }
 
 void printManageUsersMenu()
@@ -967,9 +984,7 @@ void bank()
             break;
 
         case enLogout:
-            // Save clients on logout
             saveClientsToFile(vClients);
-            // Save users if any changes were made
             saveUsersToFile(vUsers);
             break;
         }
@@ -989,5 +1004,6 @@ int main()
     cout << "Thank you for using the Bank Management System!\n";
     cout << "Goodbye!\n";
     system("pause>0");
+
     return 0;
 }
