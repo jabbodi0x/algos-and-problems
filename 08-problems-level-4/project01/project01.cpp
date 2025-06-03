@@ -22,20 +22,20 @@ struct stUser
 {
     string userName;
     string passWord;
-    int    permissions;    // bit‐flags for allowed operations
+    int    permissions;           // bit‐flags for allowed operations
     bool   markedForDeletion = false;
 };
 
-// Permission bits (use powers of two)
+// Permission bits (each is one power‐of‐two)
 enum enPermissions
 {
-    permShowClients = 1 << 0,  // 0000 0001
-    permAddClient = 1 << 1,  // 0000 0010
-    permDeleteClient = 1 << 2,  // 0000 0100
-    permUpdateClient = 1 << 3,  // 0000 1000
-    permFindClient = 1 << 4,  // 0001 0000
-    permTransactions = 1 << 5,  // 0010 0000
-    permManageUsers = 1 << 6   // 0100 0000
+    permShowClients = 1 << 0,  // 0000 0001 = 1
+    permAddClient = 1 << 1,  // 0000 0010 = 2
+    permDeleteClient = 1 << 2,  // 0000 0100 = 4
+    permUpdateClient = 1 << 3,  // 0000 1000 = 8
+    permFindClient = 1 << 4,  // 0001 0000 = 16
+    permTransactions = 1 << 5,  // 0010 0000 = 32
+    permManageUsers = 1 << 6   // 0100 0000 = 64
 };
 
 enum enBankMenu
@@ -84,11 +84,7 @@ string readString(const string& prompt = "Enter String:\n")
 
 string stringToLower(string s)
 {
-    for (char& c : s)
-    {
-        c = tolower(c);
-    }
-
+    for (char& c : s) c = tolower(c);
     return s;
 }
 
@@ -106,9 +102,7 @@ short readOption(short from, short to)
 vector<string> splitString(const string& s, const string& delimiter = SEPARATOR)
 {
     vector<string> tokens;
-    size_t start = 0;
-    size_t end = s.find(delimiter);
-
+    size_t start = 0, end = s.find(delimiter);
     while (end != string::npos)
     {
         if (end > start)
@@ -124,10 +118,10 @@ vector<string> splitString(const string& s, const string& delimiter = SEPARATOR)
 void printScreenHeader(const string& title)
 {
     const int totalWidth = 50;
-    string fullTitle = title + " Screen";
+    string    fullTitle = title + " Screen";
 
     system("cls");
-    int leftPadding = (totalWidth - fullTitle.length()) / 2;
+    int leftPadding = (totalWidth - static_cast<int>(fullTitle.length())) / 2;
     if (leftPadding < 0) leftPadding = 0;
 
     cout << string(totalWidth, '=') << "\n";
@@ -137,7 +131,7 @@ void printScreenHeader(const string& title)
 
 void goBackToMenu(const string& msg = "continue")
 {
-    cout << "\n\n\n" << "Press any key to " << msg << "...";
+    cout << "\n\n\nPress any key to " << msg << "...";
     system("pause>0");
 }
 
@@ -149,7 +143,6 @@ stClient convertClientLineToStructure(const string& clientRecordLine)
 {
     stClient       client;
     vector<string> fields = splitString(clientRecordLine, SEPARATOR);
-
     if (fields.size() == 5)
     {
         client.accountNumber = fields[0];
@@ -174,7 +167,6 @@ vector<stClient> loadClientsDataFromFile()
 {
     vector<stClient> vClients;
     fstream          myFile(CLIENTS_FILE_NAME, ios::in);
-
     if (myFile.is_open())
     {
         string   line;
@@ -195,10 +187,8 @@ void saveClientsToFile(const vector<stClient>& vClients)
     if (myFile.is_open())
     {
         for (const stClient& client : vClients)
-        {
             if (!client.markedForDeletion)
                 myFile << convertClientRecordToData(client) << "\n";
-        }
         myFile.close();
     }
 }
@@ -209,13 +199,14 @@ void saveClientsToFile(const vector<stClient>& vClients)
 
 stUser convertUserLineToStructure(const string& userRecordLine)
 {
-    stUser user;
+    stUser         user;
     vector<string> fields = splitString(userRecordLine);
-
-    user.userName = fields[0];
-    user.passWord = fields[1];
-    user.permissions = stoi(fields[2]);
-
+    if (fields.size() >= 3)
+    {
+        user.userName = fields[0];
+        user.passWord = fields[1];
+        user.permissions = stoi(fields[2]);
+    }
     return user;
 }
 
@@ -229,8 +220,7 @@ string convertUserRecordToData(const stUser& user)
 vector<stUser> loadUsersDataFromFile()
 {
     vector<stUser> vUsers;
-    fstream myFile(USERS_FILE_NAME, ios::in);
-
+    fstream         myFile(USERS_FILE_NAME, ios::in);
     if (myFile.is_open())
     {
         string line;
@@ -279,14 +269,12 @@ void printClientRow(const stClient& client)
         << "| " << setw(25) << left << client.name
         << "| " << setw(12) << left << client.phone
         << "| " << setw(12) << left << client.balance
-        << " |"
-        << "\n";
+        << " |" << "\n";
 }
 
 void printAllClientsData(const vector<stClient>& vClients)
 {
-
-    const int tableWidth = 86;
+    const int tableWidth = 86;  // matches 15+10+25+12+12 + separators
 
     system("cls");
 
@@ -300,15 +288,12 @@ void printAllClientsData(const vector<stClient>& vClients)
     }
 
     cout << string(tableWidth, '=') << "\n";
-
     cout << "| " << left << setw(15) << "Account Number"
         << "| " << left << setw(10) << "Pin Code"
         << "| " << left << setw(25) << "Client Name"
         << "| " << left << setw(12) << "Phone"
         << "| " << left << setw(12) << "Balance"
-        << " |"
-        << "\n";
-
+        << " |" << "\n";
     cout << string(tableWidth, '=') << "\n";
 
     for (const stClient& client : vClients)
@@ -317,10 +302,8 @@ void printAllClientsData(const vector<stClient>& vClients)
             printClientRow(client);
     }
 
-    // Bottom border
     cout << string(tableWidth, '=') << "\n";
 }
-
 
 #pragma endregion
 
@@ -331,9 +314,7 @@ short getClientIndexByAccountNumber(const vector<stClient>& vClients, const stri
     for (size_t i = 0; i < vClients.size(); i++)
     {
         if (vClients[i].accountNumber == accountNumber && !vClients[i].markedForDeletion)
-        {
             return i;
-        }
     }
     return -1;
 }
@@ -355,8 +336,7 @@ short getValidClientIndex(const vector<stClient>& vClients)
 stClient readClientData(const vector<stClient>& vClients)
 {
     stClient client;
-    string accountNumber;
-
+    string   accountNumber;
     while (true)
     {
         accountNumber = readString("Enter Account Number:\n");
@@ -368,12 +348,10 @@ stClient readClientData(const vector<stClient>& vClients)
         else
             cout << "An account with number " << accountNumber << " already exists.\n";
     }
-
     client.pinCode = readString("Enter Pin Code:\n");
     client.name = readString("Enter Name:\n");
     client.phone = readString("Enter Phone Number:\n");
     client.balance = stof(readString("Enter Account Balance:\n"));
-
     return client;
 }
 
@@ -391,7 +369,6 @@ void addNewClient(vector<stClient>& vClients)
     {
         printScreenHeader("Add Client");
         stClient client = readClientData(vClients);
-
         cout << "\nYou entered:\n";
         printSingleClientRecord(client);
 
@@ -405,7 +382,6 @@ void addNewClient(vector<stClient>& vClients)
             cout << "\nAdding client canceled.\n";
         }
     } while (confirmAction("Do you want to add another new client?"));
-
 }
 
 void deleteClient(vector<stClient>& vClients)
@@ -413,7 +389,6 @@ void deleteClient(vector<stClient>& vClients)
     do
     {
         printScreenHeader("Delete Client");
-
         short idx = getValidClientIndex(vClients);
         printSingleClientRecord(vClients[idx]);
 
@@ -427,7 +402,6 @@ void deleteClient(vector<stClient>& vClients)
             cout << "\nDeletion canceled.\n";
         }
     } while (confirmAction("Do you want to delete another client?"));
-
 }
 
 void updateClientData(stClient& client)
@@ -443,7 +417,6 @@ void updateClient(vector<stClient>& vClients)
     do
     {
         printScreenHeader("Update Client");
-
         short idx = getValidClientIndex(vClients);
         printSingleClientRecord(vClients[idx]);
 
@@ -459,7 +432,6 @@ void updateClient(vector<stClient>& vClients)
             cout << "\nUpdate canceled.\n";
         }
     } while (confirmAction("Do you want to update another client?"));
-
 }
 
 void findClient(const vector<stClient>& vClients)
@@ -471,7 +443,6 @@ void findClient(const vector<stClient>& vClients)
         cout << "\n\nAccount Found!\n\n";
         printSingleClientRecord(vClients[idx]);
     } while (confirmAction("Do you want to find another client?"));
-
 }
 
 float getPositiveAmount(const string& prompt)
@@ -523,7 +494,9 @@ void depositMenu(vector<stClient>& vClients)
             if (confirmAction("Perform this transaction?"))
             {
                 depositToClient(vClients[idx], amount);
-                cout << "Amount of " << amount << " was successfully deposited to account: " << vClients[idx].accountNumber << "\n";
+                cout << "Amount of " << amount
+                    << " was successfully deposited to account: "
+                    << vClients[idx].accountNumber << "\n";
             }
             else
             {
@@ -531,7 +504,6 @@ void depositMenu(vector<stClient>& vClients)
             }
         } while (confirmAction("Do you want to deposit more to this client's account?"));
     } while (confirmAction("Do you want to deposit to another client's account?"));
-
 }
 
 void withdrawMenu(vector<stClient>& vClients)
@@ -547,7 +519,9 @@ void withdrawMenu(vector<stClient>& vClients)
             if (confirmAction("Perform this transaction?"))
             {
                 withdrawFromClient(vClients[idx], amount);
-                cout << "Amount of " << amount << " was successfully withdrawn from account: " << vClients[idx].accountNumber << "\n";
+                cout << "Amount of " << amount
+                    << " was successfully withdrawn from account: "
+                    << vClients[idx].accountNumber << "\n";
             }
             else
             {
@@ -555,7 +529,6 @@ void withdrawMenu(vector<stClient>& vClients)
             }
         } while (confirmAction("Do you want to withdraw more from this client's account?"));
     } while (confirmAction("Do you want to withdraw from another client's account?"));
-
 }
 
 void totalBalanceMenu(const vector<stClient>& vClients)
@@ -564,9 +537,12 @@ void totalBalanceMenu(const vector<stClient>& vClients)
     {
         printScreenHeader("Total Balance");
         short idx = getValidClientIndex(vClients);
-        cout << "\nClient with account number " << vClients[idx].accountNumber << " has a total balance of " << fixed << setprecision(2) << vClients[idx].balance << "\n";
+        cout << "\nClient with account number "
+            << vClients[idx].accountNumber
+            << " has a total balance of "
+            << fixed << setprecision(2)
+            << vClients[idx].balance << "\n";
     } while (confirmAction("Would you like to see another client's total balance?"));
-
 }
 
 void transactionMenu()
@@ -623,32 +599,47 @@ void printUserRow(const stUser& user)
 {
     cout << "| " << setw(15) << left << user.userName
         << "| " << setw(25) << left << user.passWord
-        << "| " << setw(3) << left << user.permissions
-        << "\n";
+        << "| " << setw(5) << left << user.permissions
+        << " |" << "\n";
 }
 
-void printAllUserssData(const vector<stUser>& vUsers)
+void printAllUsersData(const vector<stUser>& vUsers)
 {
+    const int tableWidth = 53;
+
     system("cls");
-    cout << "\n\t\t\t(" << vUsers.size() << ") User(s)\n";
-    cout << "===========================================================\n";
-    cout
-        << "| " << left << setw(15) << "Username"
+
+    // Top border
+    cout << string(tableWidth, '=') << "\n";
+
+    {
+        string countLine = "(" + to_string(vUsers.size()) + ") User(s)";
+        int    padLeft = (tableWidth - static_cast<int>(countLine.size())) / 2;
+        if (padLeft < 0) padLeft = 0;
+        cout << string(padLeft, ' ') << countLine << "\n";
+    }
+
+
+    cout << string(tableWidth, '=') << "\n";
+
+    cout << "| " << left << setw(15) << "Username"
         << "| " << left << setw(25) << "Password"
-        << "| " << left << setw(3) << "Permissions"
-        << "\n";
-    cout << "===========================================================\n";
+        << "| " << left << setw(5) << "Perms"
+        << " |" << "\n";
+
+    cout << string(tableWidth, '=') << "\n";
 
     for (const stUser& user : vUsers)
+    {
         if (!user.markedForDeletion)
             printUserRow(user);
+    }
 
-    cout << "===========================================================\n";
+    cout << string(tableWidth, '=') << "\n";
 }
 
+
 #pragma endregion
-
-
 
 #pragma region UserManagementStubs
 
@@ -656,7 +647,8 @@ short getuUserIndexByUsername(const vector<stUser>& vUsers, const string& userna
 {
     for (size_t i = 0; i < vUsers.size(); ++i)
     {
-        if (stringToLower(vUsers[i].userName) == stringToLower(username) && !vUsers[i].markedForDeletion)
+        if (stringToLower(vUsers[i].userName) == stringToLower(username)
+            && !vUsers[i].markedForDeletion)
         {
             return i;
         }
@@ -667,7 +659,7 @@ short getuUserIndexByUsername(const vector<stUser>& vUsers, const string& userna
 short getValidUserIndex(const vector<stUser>& vUsers)
 {
     string username;
-    short idx;
+    short  idx;
     do
     {
         username = readString("\nEnter Username:\n");
@@ -683,6 +675,7 @@ stUser readUserData(const vector<stUser>& vUsers)
     stUser user;
     string username;
 
+    // 1) Username must be unique
     while (true)
     {
         username = readString("\nEnter Username:\n");
@@ -692,26 +685,29 @@ stUser readUserData(const vector<stUser>& vUsers)
             break;
         }
         else
-            cout << "\nA user with username '" << username << "' already exists or is reserved. Try again.\n";
+            cout << "\nA user with username '" << username << "' already exists. Try again.\n";
     }
 
+    // 2) Read password
     user.passWord = readString("\nEnter Password:\n");
 
-    cout << "\nPermissions\n";
+    // 3) Set permissions using the enum masks
     user.permissions = 0;
-    user.permissions += (confirmAction("1- Show Clients List") ? 2 : 0);
-    user.permissions += (confirmAction("2- Add New Clients") ? 4 : 0);
-    user.permissions += (confirmAction("3- Delete Clients") ? 8 : 0);
-    user.permissions += (confirmAction("4- Update Clients") ? 16 : 0);
-    user.permissions += (confirmAction("5- Find Clients") ? 32 : 0);
-    user.permissions += (confirmAction("6- Manage Users") ? 64 : 0);
-
+    cout << "\nSet Permissions:\n";
+    if (confirmAction(" 1- Show Clients List"))   user.permissions |= permShowClients;
+    if (confirmAction(" 2- Add New Clients"))     user.permissions |= permAddClient;
+    if (confirmAction(" 3- Delete Clients"))      user.permissions |= permDeleteClient;
+    if (confirmAction(" 4- Update Clients"))      user.permissions |= permUpdateClient;
+    if (confirmAction(" 5- Find Clients"))        user.permissions |= permFindClient;
+    if (confirmAction(" 6- Transactions"))        user.permissions |= permTransactions;
+    if (confirmAction(" 7- Manage Users"))        user.permissions |= permManageUsers;
 
     return user;
 }
+
 void listUsers(const vector<stUser>& vUsers)
 {
-    printAllUserssData(vUsers);
+    printAllUsersData(vUsers);
 }
 
 void addUser(vector<stUser>& vUsers)
@@ -741,7 +737,6 @@ void deleteUser(vector<stUser>& vUsers)
     do
     {
         printScreenHeader("Delete User");
-
         short idx = getValidUserIndex(vUsers);
         printSingleUserRecord(vUsers[idx]);
 
@@ -759,16 +754,17 @@ void deleteUser(vector<stUser>& vUsers)
 
 void updateUserData(stUser& user)
 {
-    user.passWord = readString("\nEnter new Password:\n");
-
-    cout << "\nPermissions\n";
+    user.passWord = readString("Enter new Password:\n");
     user.permissions = 0;
-    user.permissions += (confirmAction("1- Show Clients List") ? 2 : 0);
-    user.permissions += (confirmAction("2- Add New Clients") ? 4 : 0);
-    user.permissions += (confirmAction("3- Delete Clients") ? 8 : 0);
-    user.permissions += (confirmAction("4- Update Clients") ? 16 : 0);
-    user.permissions += (confirmAction("5- Find Clients") ? 32 : 0);
-    user.permissions += (confirmAction("6- Manage Users") ? 64 : 0);
+
+    cout << "\nSet New Permissions:\n";
+    if (confirmAction(" 1- Show Clients List"))   user.permissions |= permShowClients;
+    if (confirmAction(" 2- Add New Clients"))     user.permissions |= permAddClient;
+    if (confirmAction(" 3- Delete Clients"))      user.permissions |= permDeleteClient;
+    if (confirmAction(" 4- Update Clients"))      user.permissions |= permUpdateClient;
+    if (confirmAction(" 5- Find Clients"))        user.permissions |= permFindClient;
+    if (confirmAction(" 6- Transactions"))        user.permissions |= permTransactions;
+    if (confirmAction(" 7- Manage Users"))        user.permissions |= permManageUsers;
 }
 
 void updateUser(vector<stUser>& vUsers)
@@ -776,7 +772,6 @@ void updateUser(vector<stUser>& vUsers)
     do
     {
         printScreenHeader("Update User");
-
         short idx = getValidUserIndex(vUsers);
         printSingleUserRecord(vUsers[idx]);
 
@@ -823,8 +818,8 @@ void manageUsers(vector<stUser>& vUsers)
     do
     {
         printManageUsersMenu();
-
         option = readOption(1, 6);
+
         switch (option)
         {
         case enListUsers:
@@ -843,10 +838,11 @@ void manageUsers(vector<stUser>& vUsers)
             findUser(vUsers);
             break;
         case enMainMenuUsers:
+            // simply return without pausing
             break;
         }
         if (option != enMainMenuUsers)
-            goBackToMenu("Go back to manage users menu");
+            goBackToMenu("go back to manage users menu");
     } while (option != enMainMenuUsers);
 }
 
@@ -870,31 +866,25 @@ bool isLoginValid(const vector<stUser>& vUsers, const string& username, const st
             return true;
         }
     }
-
     return false;
 }
-
 
 stUser loginUser(const vector<stUser>& vUsers)
 {
     short idx = 0;
-    bool firstAttempt = true;
+    bool  firstAttempt = true;
     while (true)
     {
         system("cls");
         printScreenHeader("Login");
 
         if (!firstAttempt)
-        {
             cout << "\nInvalid Username OR Password! Try Again.\n\n";
-        }
 
         string username = readString("Username:\n");
         string password = readString("Password:\n");
         if (isLoginValid(vUsers, username, password, idx))
-        {
             return vUsers[idx];
-        }
         else
             firstAttempt = false;
     }
@@ -921,78 +911,131 @@ void printMainMenu()
 void bank()
 {
     vector<stClient> vClients = loadClientsDataFromFile();
-    vector<stUser> vUsers = loadUsersDataFromFile();
+    vector<stUser>   vUsers = loadUsersDataFromFile();
 
-    stUser currentUser = loginUser(vUsers);
-
-    short option = 0;
-    do
+    while (true)
     {
-        printMainMenu();
+        stUser currentUser = loginUser(vUsers);
 
-        option = readOption(1, 8);
-
-        switch (option)
+        short option = 0;
+        do
         {
-        case enShowAllClients:
-            if (hasPermission(currentUser, permShowClients))
-                printAllClientsData(vClients);
-            else
-                cout << "\nPermission Denied: Cannot view clients.\n";
-            break;
+            printMainMenu();
+            option = readOption(1, 8);
 
-        case enAddNewClient:
-            if (hasPermission(currentUser, permAddClient))
-                addNewClient(vClients);
-            else
-                cout << "\nPermission Denied: Cannot add new client.\n";
-            break;
+            bool skipOuterPause = false;
 
-        case enDeleteClient:
-            if (hasPermission(currentUser, permDeleteClient))
-                deleteClient(vClients);
-            else
-                cout << "\nPermission Denied: Cannot delete client.\n";
-            break;
+            switch (option)
+            {
+            case enShowAllClients:
+                if (hasPermission(currentUser, permShowClients))
+                {
+                    printAllClientsData(vClients);
+                    skipOuterPause = false;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot view clients.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-        case enUpdateClient:
-            if (hasPermission(currentUser, permUpdateClient))
-                updateClient(vClients);
-            else
-                cout << "\nPermission Denied: Cannot update client.\n";
-            break;
+            case enAddNewClient:
+                if (hasPermission(currentUser, permAddClient))
+                {
+                    addNewClient(vClients);
+                    skipOuterPause = false;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot add new client.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-        case enFindClient:
-            if (hasPermission(currentUser, permFindClient))
-                findClient(vClients);
-            else
-                cout << "\nPermission Denied: Cannot find client.\n";
-            break;
+            case enDeleteClient:
+                if (hasPermission(currentUser, permDeleteClient))
+                {
+                    deleteClient(vClients);
+                    skipOuterPause = false;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot delete client.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-        case enTransactions:
-            if (hasPermission(currentUser, permTransactions))
-                transactions(vClients);
-            else
-                cout << "\nPermission Denied: Cannot perform transactions.\n";
-            break;
+            case enUpdateClient:
+                if (hasPermission(currentUser, permUpdateClient))
+                {
+                    updateClient(vClients);
+                    skipOuterPause = false;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot update client.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-        case enManageUsers:
-            if (hasPermission(currentUser, permManageUsers))
-                manageUsers(vUsers);
-            else
-                cout << "\nPermission Denied: Cannot manage users.\n";
-            break;
+            case enFindClient:
+                if (hasPermission(currentUser, permFindClient))
+                {
+                    findClient(vClients);
+                    skipOuterPause = false;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot find client.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-        case enLogout:
-            saveClientsToFile(vClients);
-            saveUsersToFile(vUsers);
-            break;
-        }
+            case enTransactions:
+                if (hasPermission(currentUser, permTransactions))
+                {
+                    transactions(vClients);
+                    skipOuterPause = true;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot perform transactions.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-        if (option != enLogout && option != enManageUsers && option != enTransactions)
-            goBackToMenu("Go Back to Main Menu");
+            case enManageUsers:
+                if (hasPermission(currentUser, permManageUsers))
+                {
+                    manageUsers(vUsers);
+                    skipOuterPause = true;
+                }
+                else
+                {
+                    cout << "\nPermission Denied: Cannot manage users.\n";
+                    goBackToMenu("return to Main Menu");
+                    skipOuterPause = true;
+                }
+                break;
 
-    } while (option != enLogout);
+            case enLogout:
+                saveClientsToFile(vClients);
+                saveUsersToFile(vUsers);
+                break;
+            }
+
+            if (!skipOuterPause && option != enLogout)
+                goBackToMenu("return to Main Menu");
+
+        } while (option != enLogout);
+    }
 }
 
 #pragma endregion
@@ -1000,10 +1043,7 @@ void bank()
 int main()
 {
     bank();
-    cout << endl << endl;
-    cout << "Thank you for using the Bank Management System!\n";
-    cout << "Goodbye!\n";
+    cout << "\n\nThank you for using the Bank Management System!\nGoodbye!\n";
     system("pause>0");
-
     return 0;
 }
