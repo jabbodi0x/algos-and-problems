@@ -211,7 +211,10 @@ string formatMoney(float amount)
     return formattedInt + "." + fracStr;
 }
 
-
+void displayCurrentBalance(float amount)
+{
+    cout << "\nYour current account balance is " << formatMoney(amount) << "\n";
+}
 void printQuickWithdrawMenu()
 {
     printScreenHeader("Quick Withdraw");
@@ -219,7 +222,7 @@ void printQuickWithdrawMenu()
     cout << setw(10) << left << " [3] 200" << "\t[4] 500\n";
     cout << setw(10) << left << " [5] 1,000" << "\t[6] 2,000\n";
     cout << setw(10) << left << " [7] 5,000" << "\t[8] 10,000\n";
-    cout << "\n[9] Main Menu\n";
+    cout << "\n [9] Main Menu\n";
     cout << string(50, '=') << "\n";
 }
 
@@ -257,7 +260,7 @@ void quickWithdrawMenu(stClient& client)
         do
         {
             printQuickWithdrawMenu();
-            cout << "\nYour current account balance is " << formatMoney(client.balance) << "\n";
+            displayCurrentBalance(client.balance);
             cout << errorMsg;
 
             option = readOption(1, 9);
@@ -271,7 +274,7 @@ void quickWithdrawMenu(stClient& client)
         {
             client.balance -= amounts[option];
             cout << "\nAn amount of " << amounts[option] << " was successfully withdrawn.\n";
-            cout << "\nYour account's new balance is " << formatMoney(client.balance) << "\n";
+            displayCurrentBalance(client.balance);
         }
         else
             break;
@@ -288,8 +291,8 @@ void normalWithdrawMenu(stClient& client)
         do
         {
             printScreenHeader("Normal Withdraw");
-            cout << "\nYour current account balance is " << formatMoney(client.balance) << "\n";
-            
+            displayCurrentBalance(client.balance);
+
             cout << errorMsg;
 
             cout << "\nEnter an amount to withdraw (Multiple of 5):\n";
@@ -300,7 +303,8 @@ void normalWithdrawMenu(stClient& client)
         {
             client.balance -= amount;
             cout << "\nAn amount of " << amount << " was successfully withdrawn.\n";
-            cout << "\nYour account's new balance is " << formatMoney(client.balance) << "\n";
+
+            displayCurrentBalance(client.balance);
         }
         
 
@@ -331,7 +335,7 @@ void depositMenu(stClient& client)
         do
         {
             printScreenHeader("Deposit");
-            cout << "\nYour account balance is " << formatMoney(client.balance) << "\n";
+            displayCurrentBalance(client.balance);
 
             cout << errorMsg;
 
@@ -343,8 +347,7 @@ void depositMenu(stClient& client)
         {
             client.balance += amount;
             cout << "\nAn amount of " << amount << " was successfully deposited to your account!\n";
-            cout << "\nYour account's new balance is " << formatMoney(client.balance) << "\n";
-
+            displayCurrentBalance(client.balance);
         }
 
     } while (confirmAction("Do you want to deposit more?"));
@@ -353,7 +356,7 @@ void depositMenu(stClient& client)
 void checkBalanceMenu(stClient& client)
 {
     printScreenHeader("Check Balance");
-    cout << "\nYour account balance is " << formatMoney(client.balance) << "\n\n";
+    displayCurrentBalance(client.balance);
     cout << string(50, '=') << "\n";
 }
 
@@ -391,6 +394,11 @@ bool isLoginValid(const vector<stClient>& vClients, const string& accountNumber,
     return false;
 }
 
+void showLoginAttempts(short remaining)
+{
+    cout << "\nInvalid Credentials! Attempts Remaining: (" << remaining << ")\n";
+}
+
 short loginUser(const vector<stClient> &vClients, bool& validLogin, short &idx)
 {
     bool firstAttempt = true;
@@ -401,7 +409,7 @@ short loginUser(const vector<stClient> &vClients, bool& validLogin, short &idx)
         printScreenHeader("Login");
 
         if (!firstAttempt)
-            cout << "\nInvalid Credentials! Attempts Remaining: (" << attempts << ")\n";
+            showLoginAttempts(attempts);
 
         string accountNumber = readString("\nEnter Account Number:\n");
         string pinCode = readString("\nEnter PIN Code:\n");
@@ -467,9 +475,7 @@ void ATM_SYSTEM()
             if (option != enMainMenu::enLogout && option!= enMainMenu::enQuickWithdraw)
                 goBackToMenu("go back to ATM Main Menu");
             if (option == enMainMenu::enLogout)
-            {
                 break;
-            }
         }
     }
 }
